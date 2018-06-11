@@ -11,23 +11,30 @@ socket.on('connection:prompt', function(sPseudo){
     var lg = document.createTextNode(sPseudo + " a rejoint le chat !");
     para.appendChild(lg);
     para.style.fontStyle = "italic";
-    listMessage.insertBefore(para, listMessage.childNodes[0]);
+    listMessage.appendChild(para);
 });
 
-socket.on('newMessage', function(msg, sPseudo){
+socket.on('message:printMessage', function(msg, sPseudo){
     var listMessage = document.getElementById("listMessage");
     var para = document.createElement("p");
     var message = document.createTextNode(sPseudo + ":" + msg);
     para.appendChild(message);
-    // listMessage.insertBefore(para, listMessage.childNodes[0]);
     listMessage.appendChild(para);
     //scroll down
     document.querySelector(".panel-body").scrollTo(0,document.querySelector(".panel-body").scrollHeight);
 });
 
+socket.on("connexion:disconnect", function(pseudo){
+    var listMessage = document.getElementById("listMessage");
+    var para = document.createElement("p");
+    var message = document.createTextNode(pseudo + " à quitté le chat !");
+    para.appendChild(message);
+    listMessage.appendChild(para);
+});
+
 function processForm() {
     var msg = document.querySelector('input[name="message"]').value;
-    socket.emit('sendMessage', msg);
+    socket.emit('message:newMessage', msg);
 };
 
 //Envoyer un message
