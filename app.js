@@ -55,8 +55,8 @@ app.post("/log", urlencodedParser, function (req, res) {
   } else {
     // Validate if username is free
       if (usernames.indexOf(req.body.username) != -1) {
-        err = "User name already used by someone else";
-        res.redirect('404.ejs');
+        options.error = "User name already used by someone else";
+        res.render('log.ejs', options);
         }
       else{
         req.session.username = req.body.username;
@@ -77,19 +77,19 @@ app.get('/', function(req,res){
     }
 });
 
-app.post('/', urlencodedParser, function(req,res){
-    res.setHeader('Content-Type','text/html');
-    if(req.body.todoTask != ""){
-        req.session.todoList.push(req.body.todoTask);
-    }
-    res.render('index.ejs', {todoList : req.session.todoList});
-});
+// app.post('/', urlencodedParser, function(req,res){
+//     res.setHeader('Content-Type','text/html');
+//     if(req.body.todoTask != ""){
+//         req.session.todoList.push(req.body.todoTask);
+//     }
+//     res.render('index.ejs', {todoList : req.session.todoList});
+// });
 
-app.get('/supprimer/:indice', function(req,res){
-    res.setHeader('Content-Type','text/html');
-    req.session.todoList.splice(req.params.indice,1);
-    res.redirect('/');
-});
+// app.get('/supprimer/:indice', function(req,res){
+//     res.setHeader('Content-Type','text/html');
+//     req.session.todoList.splice(req.params.indice,1);
+//     res.redirect('/');
+// });
 
 
 server.listen(8080, function(){
