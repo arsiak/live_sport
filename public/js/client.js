@@ -19,11 +19,14 @@ socket.on('newMessage', function(msg, sPseudo){
     var para = document.createElement("p");
     var message = document.createTextNode(sPseudo + ":" + msg);
     para.appendChild(message);
-    listMessage.insertBefore(para, listMessage.childNodes[0]);
+    // listMessage.insertBefore(para, listMessage.childNodes[0]);
+    listMessage.appendChild(para);
+    //scroll down
+    document.querySelector(".panel-body").scrollTo(0,document.querySelector(".panel-body").scrollHeight);
 });
 
 function processForm() {
-    var msg = document.querySelector('form input[name="msg"]').value;
+    var msg = document.querySelector('input[name="message"]').value;
     socket.emit('sendMessage', msg);
 };
 
