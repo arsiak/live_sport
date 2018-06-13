@@ -1,0 +1,19 @@
+doctype html
+html
+    head
+        title #{title}
+        link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous")
+        link(rel="stylesheet" type="text/css" href="stylesheets/main.css")
+        script.
+            function change_onglet(name)
+            {
+                if(anc_onglet != name){
+                    document.getElementById('onglet_'+name).classList.add('onglet_1');
+                    document.getElementById('onglet_'+anc_onglet).classList.remove('onglet_1');
+                    document.getElementById('contenu_onglet_'+anc_onglet).style.display = 'none';
+                    document.getElementById('contenu_onglet_'+name).style.display = 'block';
+                    anc_onglet = name;
+                }
+            }
+    body
+        block content

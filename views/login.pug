@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    p You need to be logged in, bastard!
+    if error 
+        p Erreur: #{error}
+    form(method="post" action="")
+        input(type="text" name="username" placeholder="Type your login" autofocus required)
+        input(type="password" name="password" placeholder="Type your password" autofocus required)
+        input(type="submit")

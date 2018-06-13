@@ -1,0 +1,30 @@
+extends layout
+
+block content
+    h1 Copa del mundo
+    h2 Youpie
+    h3 test pug
+    div.container
+        div.row
+            <!-- inicio de la caja de chat con bootstrap -->
+            div(class="col-md-6 col-md-offset-3")
+                div(class="panel panel-primary")
+                    div(class="panel-heading")
+                        span(class="far fa-comments" id="onglet_messages" onclick="javascript:change_onglet('messages');") Chat
+                        span(class="far fa-comments" id="onglet_users" onclick="javascript:change_onglet('users');") Users 
+                    div(class="panel-body contenu_onglet" id="contenu_onglet_messages" style="height: 500px; max-height: 500px;overflow-y: scroll;")
+                        ul.listMessage 
+                    div(class="panel-body contenu_onglet" id="contenu_onglet_users" style="height: 500px; max-height: 500px;overflow-y: scroll;")
+                        ul#listUsers
+                    div.panel-footer
+                        form(action="" class="input-group" id="messageForm")
+                            input#message(type="text" class="form-control input-sm" name="message" placeholder="Ecrire un message...")
+                            span.input-group-btn
+                                input(type="submit" value="Envoyer" class="btn btn-warning btn-sm btnEnvoyer")          
+    script.
+        //<!--
+                var anc_onglet = 'messages';
+                change_onglet(anc_onglet);
+        //-->
+    script(src="/socket.io/socket.io.js")
+    script(type="text/javascript" src="js/client.js")

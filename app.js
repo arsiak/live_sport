@@ -1,121 +1,84 @@
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-var urlencodedParser = bodyParser.urlencoded({ extended: false });
-var passport = require('passport');
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-var ent = require('ent');
-var session = require('cookie-session')
+const express = require('express');
+const bodyParser = require('body-parser');
+const ent = require('ent');
+const path = require('path');
+const mongoose = require('mongoose');
+const session = require('express-session')
 
-app.use(express.static(__dirname + '/public'));
 
-var usernames = [];
-var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
-var sessionMiddleware = session({
-  secret: 'keyboard cat',
-  cookie: { secure: true,
-            httpOnly: true,
-            expires: expiryDate
-          }
+//MONGO
+//Si elle n'existe pas elle sera crée si une insertion est faite
+//Créer un object connextion accessible via mongoose.connection
+mongoose.connect('mongodb://localhost/live_sport');
+let db = mongoose.connection;
+// Check connnection
+db.once('open', function(){
+  console.log('Connected to mongoDB');
+});
+// Check for DB errors
+db.on('error', function(err){
+  console.log(err);
 });
 
-app.use(sessionMiddleware);
 
-// app.use(function(req,res,next){
-//     if(typeof(req.session.todoList) == 'undefined'){
-//        req.session.todoList = [];
-//     }
-//     next();
-// });
+//Contrôle admin
+function requireLogin(req, res, next) {
+  // Si il le client est admin
+  if (typeof req.session.admin != 'undefined'){
+    next();
+  }
+  else{
+    res.redirect('/login');
+  }
+}
+//APP
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
-// app.use(function(req,res,next){
-//     if(typeof(req.session.todoList) == 'undefined'){
-//        req.session.todoList = [];
-//     }
-//     next();
-// });
+var admin = require('./routes/admin');
+var main = require('./routes/main');
+app.set('views', path.join(__dirname,'views'));
+app.set('view engine', 'pug');
+var sess = {
+  secret : 'keyboard cat',
+  resave : false,
+  saveUninitialized: true,
 
-app.get('/log', function(req,res){
-    res.setHeader('Content-Type','text/html');
-    res.render('log.ejs',{ "username": req.session.username, "error": null });
-});
+}
 
-app.post("/log", urlencodedParser, function (req, res) {
-  var options = { "username": req.body.username, "error": null };
-  if (!req.body.username) {
-    options.error = "User name is required";
-    res.render("log.ejs", options);
-  } else if (req.body.username == req.session.username) {
-    // User has not changed username, accept it as-is
-    res.redirect("/");
-  } else if (!req.body.username.match(/^[a-zA-Z0-9\-_]{3,}$/)) {
-    options.error = "User name must have at least 3 alphanumeric characters";
-    res.render("log.ejs", options);
-  } else {
-    // Validate if username is free
-      if (usernames.indexOf(req.body.username) != -1) {
-        options.error = "User name already used by someone else";
-        res.render('log.ejs', options);
-        }
-      else{
-        req.session.username = req.body.username;
-        usernames.push(req.body.username);
-        res.redirect('/');
-      }
-    }   
-});
-
-app.get('/', function(req,res){
-    if (req.session.username) {
-        // User is authenticated, let him in
-        res.setHeader('Content-Type','text/html');
-        res.render('index.ejs',{test:"abc"});
-    } else {
-        // Otherwise we redirect him to login form
-        res.redirect("/log");
-    }
-});
-
-// app.post('/', urlencodedParser, function(req,res){
-//     res.setHeader('Content-Type','text/html');
-//     if(req.body.todoTask != ""){
-//         req.session.todoList.push(req.body.todoTask);
-//     }
-//     res.render('index.ejs', {todoList : req.session.todoList});
-// });
-
-// app.get('/supprimer/:indice', function(req,res){
-//     res.setHeader('Content-Type','text/html');
-//     req.session.todoList.splice(req.params.indice,1);
-//     res.redirect('/');
-// });
+if (app.get('env') === 'production') {
+  app.set('trust proxy', 1) // trust first proxy
+  sess.cookie.secure = true // serve secure cookies
+}
+app.use(session(sess));
+app.use(express.static(__dirname + '/public')); 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use('/admin', requireLogin, admin);
+app.use('/', main);
 
 
+//SOCKET.IO
 server.listen(8080, function(){
     console.log("Listening on port 8080...");
 });
 
-io.use(function(socket,next){
-    sessionMiddleware(socket.request,socket.request.res,next);
-});
 // Quand un client se connecte, on le note dans la console
 io.on('connection', function (socket) {
-    socket.pseudo = socket.request.session.username;
-    socket.broadcast.emit("connection:prompt", socket.pseudo);
+    socket.broadcast.emit("connection:prompt");
 
     socket.on('message:newMessage', function (msg){
-        io.emit("message:printMessage", ent.encode(msg), socket.pseudo);
+        io.emit("message:printMessage", ent.encode(msg));
     });
 
     socket.on('connexion:disconnect', function () {
-        var pseudo = socket.request.session.username;
-        usernames.splice(usernames.indexOf(socket.pseudo),1);
-        socket.broadcast.emit("connection:close", socket.pseudo);
+        usernames.splice(usernames.indexOf(),1);
+        socket.broadcast.emit("connection:close");
     });
 
     socket.on('disconnect', function(){
-        io.emit("connexion:disconnect", socket.pseudo);
+        io.emit("connexion:disconnect");
     });
 
 });
