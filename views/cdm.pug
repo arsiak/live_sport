@@ -1,29 +1,30 @@
 extends layout
 
 block content
-    h1 Copa del mundo
-    h2 Youpie
-    h3 test pug
     div.container
+        .page-header.text-center
+            h1 Coupe du monde 2018 
+            h4 Matchs commentés - Chat en Live
+            h5 (temps réel)
         div.row
-            div(class="col-md-6")
+            div(class="col-md-7")
                 div(class="panel panel-default")  
-                    div(class="panel-heading col-md-12")
-                        p.col-md-4.text-center#equipe1 Biduleerererezrer ezefe
-                        p.col-md-2.text-center#score1 0 
-                        p.col-md-2.text-center#score2 0
-                        p.col-md-4.text-center#equipe2 Bidule  
-                    div(class="panel-body")
-                        ul#listComments
+                    div(class="panel-heading col-md-12 col-sm-12 col-xs-12")
+                        p.col-md-4.col-sm-4.col-xs-4.text-center#equipe1 Biduleerererezrer ezefe
+                        p.col-md-2.col-sm-2.col-xs-2.text-center#score1 0 
+                        p.col-md-2.col-sm-2.col-xs-2.text-center#score2 0
+                        p.col-md-4.col-sm-4.col-xs-4.text-center#equipe2 Bidule  
+                    div(class="panel-body" style="height: 500px; max-height:500px;overflow-y: scroll;")
+                        ul#listComments.list-group
             <!-- inicio de la caja de chat con bootstrap -->
-            div(class="col-md-4")
+            div(class="col-md-5")
                 div(class="panel panel-primary")
                     div(class="panel-heading")
-                        span(class="far fa-comments" id="onglet_messages" onclick="javascript:change_onglet('messages');") Chat
-                        span(class="far fa-comments" id="onglet_users" onclick="javascript:change_onglet('users');") Users 
-                    div(class="panel-body contenu_onglet" id="contenu_onglet_messages" style="height: 200px; max-height: 200px;overflow-y: scroll; display:block")
+                        span(class="fas fa-comments" id="onglet_messages" onclick="javascript:change_onglet('messages');" style="margin:5px;") Chat
+                        span(class="fas fa-users" id="onglet_users" onclick="javascript:change_onglet('users');" style="margin:5px;") Users 
+                    div(class="panel-body contenu_onglet" id="contenu_onglet_messages" style="height: 300px; max-height: 500px;overflow-y: scroll; display:block")
                         ul#listMessage 
-                    div(class="panel-body contenu_onglet" id="contenu_onglet_users" style="height: 200px; max-height: 200px;overflow-y: scroll; display:none")
+                    div(class="panel-body contenu_onglet" id="contenu_onglet_users" style="height: 300px; max-height: 500px;overflow-y: scroll; display:none")
                         ul#listUsers
                     div.panel-footer
                         form(action="" class="input-group" id="messageForm")

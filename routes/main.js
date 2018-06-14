@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var bcrypt = require("bcrypt");
+var ent = require("ent");
 
 // Bring in Models
 let Article = require('../models/article');
@@ -20,6 +21,8 @@ router.get("/login", function (req, res) {
 });
 
 router.post("/login", function (req, res) {
+    req.body.username = ent.encode(req.body.username);
+    req.body.password = ent.encode(req.body.password);
     if (req.body.username && req.body.password) {
         var adminData = {
             username : req.body.username,
@@ -58,7 +61,7 @@ router.get('/', function(req,res){
 
 let User = require('../models/user.js');
 router.post('/cdm', function(req,res){
-    pseudo = req.body.pseudo;
+    pseudo = ent.encode(req.body.pseudo);
     //Intérroger la base de données pour savoir si le pseudo existe déjà
     User.findOne({username : pseudo}, function(err, user){
         if(user !== null){

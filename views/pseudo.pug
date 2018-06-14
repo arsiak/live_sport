@@ -1,15 +1,14 @@
 extends layout
 
 block content
-    div.site-wrapper
-        div.site-wrapper-inner
-            div.container
-                div.masthead.clearfix
-                    div.container.inner
-                        h3.masthead-brand CDM
-                div.inner.cover
-                    h1.cover-heading Coupe du Monde 2018
-                    p.lead Choisi un pseudo et participe au chat de la coupe du monde et au live commenté 
-                    form(action="/cdm" method="POST")
-                        input(type="text" name="pseudo" placeholder="Entrez votre pseudo")
-                        input(type="submit" value="commencer")
+    div.vertical-center.bg-1
+        div.container-fluid.text-center            
+            h1 Coupe du Monde 2018
+            p Veuillez choisir un login pour participer au chat de la coupe du monde et au live commenté
+            hr.my-4
+            form(action="/cdm" method="POST" class="form-inline")
+                div.input-group
+                    span(class="input-group-addon")
+                        i(class="fas fa-futbol")
+                    input(type="text" name="pseudo" class="form-control" placeholder="Entrez votre pseudo") 
+                input(type="submit" value="Entrer" class="btn btn-primary")

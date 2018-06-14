@@ -18,7 +18,12 @@ socket.on('connexion:notif', function(sPseudo){
 socket.on('message:printMessage', function(msg, sPseudo){
     var listMessage = document.getElementById("listMessage");
     var para = document.createElement("li");
-    var message = document.createTextNode(sPseudo + ":" + msg);
+    var span = document.createElement("span");
+    var pseudo = document.createTextNode(sPseudo);
+    span.appendChild(pseudo);
+    span.style.color = "#4395FFFF"
+    var message = document.createTextNode( " : " + msg);
+    para.appendChild(span)
     para.appendChild(message);
     listMessage.appendChild(para);
     //scroll down
@@ -93,15 +98,21 @@ socket.on('equipe:printEquipe', function(equipes){
     equipe1.innerHTML = " ";
     equipe2.innerHTML = " ";
     console.log(equipes);
-    equipe1.appendChild(document.createTextNode(equipes.equipe1.nom));
-    equipe2.appendChild(document.createTextNode(equipes.equipe2.nom));
+    equipe1.appendChild(document.createTextNode(equipes.equipe1.nom.toUpperCase()));
+    equipe2.appendChild(document.createTextNode(equipes.equipe2.nom.toUpperCase()));
 });
 
 socket.on('comments:printComments', function(comments){
     var listComments = document.getElementById("listComments");
     comments.forEach(function(comment){
+        var listComments = document.getElementById("listComments");
         var li = document.createElement("li");
-        var textComment = document.createTextNode(comment.text);
+        var eMinute = document.createElement("span");
+        eMinute.classList.add("badge", "badge-primary", "badge-pill", "pull-left");
+        eMinute.appendChild(document.createTextNode(comment.minute));
+        var textComment = document.createTextNode(comment.equipe + ':' + comment.text);
+        li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+        li.appendChild(eMinute);
         li.appendChild(textComment);
         listComments.appendChild(li);
     });
@@ -110,7 +121,12 @@ socket.on('comments:printComments', function(comments){
 socket.on('comments:printComment', function(comment){
     var listComments = document.getElementById("listComments");
     var li = document.createElement("li");
-    var textComment = document.createTextNode(comment.minute + ":" + comment.equipe + ':' + comment.text);
+    var eMinute = document.createElement("span");
+    eMinute.classList.add("badge", "badge-primary", "badge-pill", "pull-left");
+    eMinute.appendChild(document.createTextNode(comment.minute));
+    var textComment = document.createTextNode(comment.equipe + ':' + comment.text);
+    li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+    li.appendChild(eMinute);
     li.appendChild(textComment);
-    listComments.appendChild(li);
+    listComments.insertBefore(li, listComments.firstChild);
 });

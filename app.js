@@ -62,7 +62,8 @@ var users = [];
 var messages = [];
 var score = {score1 : 0, score2 : 0};
 var equipes = {equipe1 :{nom : "test", couleur : "blue"}, equipe2 : {nom : "test", couleur : "rouge"}}
-var comments = [{text : "ndnfinezafif", equipe : "equipe1", type : "info", minute : "32:00" }];
+var comments = [];
+// var tobj = {text : "ndnfinezafif", equipe : "equipe1", type : "info", minute : "32:00" }
 //SOCKET.IO
 server.listen(8080, function(){
     console.log("Listening on port 8080...");
@@ -103,6 +104,7 @@ io.on('connection', function (socket) {
 
     socket.on("comment:newComment",function(comment){
       comments.unshift({text:comment.text, equipe:comment.equipe, type:comment.type, minute: comment.minute});
+      console.log(comments);
       //Enregistrer commentaire database
       io.emit("comments:printComment", comment);
     });
