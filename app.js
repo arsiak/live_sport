@@ -47,10 +47,10 @@ var main = require('./routes/main');
 app.set('views', path.join(__dirname,'views'));
 app.set('view engine', 'pug');
 
-if (app.get('env') === 'production') {
-  app.set('trust proxy', 1) // trust first proxy
-  sess.cookie.secure = true // serve secure cookies
-}
+// if (app.get('env') === 'production') {
+//   app.set('trust proxy', 1) // trust first proxy
+//   sess.cookie.secure = true // serve secure cookies
+// }
 app.use(session);
 app.use(express.static(__dirname + '/public')); 
 app.use(bodyParser.urlencoded({ extended: false }));
