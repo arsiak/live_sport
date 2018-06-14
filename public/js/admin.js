@@ -78,13 +78,48 @@ formMessage.addEventListener("submit", function(e){
     processForm();
 });
 
-socket.on('score:printScore', function(objScore){
-    var scoreEquipe1 = document.getElementById("score1");
-    var scoreEquipe2 = document.getElementById("score2");
-    scoreEquipe1.innerHTML = " ";
-    scoreEquipe2.innerHTML = " ";
-    scoreEquipe1.appendChild(document.createTextNode(objScore.score1));
-    scoreEquipe2.appendChild(document.createTextNode(objScore.score2));
+function processFormCommentary() {
+    var comment = document.querySelector('input[name="comment"]').value;
+
+    var selectType = document.getElementById("typeComment");
+    var type = selectType.options[selectType.selectedIndex].value;
+
+    var selectEquipe = document.getElementById("typeEquipe");
+    var equipe = selectEquipe.options[selectEquipe.selectedIndex].value;
+
+    var minutes = document.querySelector('input[name="minuteComment"]').value;
+    socket.emit('comment:newComment', {text:comment, equipe:equipe, type:type, minute:minutes});
+};
+//Envoyer un commentaire
+var formCommentary = document.getElementById("commentaryForm")
+formCommentary.addEventListener("submit", function(e){
+    e.preventDefault();
+    processFormCommentary()
+})
+
+function processFormScore() {
+    var score1 = document.querySelector('input[name="score1"]').value;
+    var score2 = document.querySelector('input[name="score2"]').value;
+    socket.emit('score:majScore',{"score1": score1, "score2": score2});
+};
+//Envoyer un commentaire
+var formScore = document.getElementById("scoreForm");
+formScore.addEventListener("submit", function(e){
+    e.preventDefault();
+    processFormScore();
+})
+
+//Maj equipe
+function processFormTeam() {
+    var team1 = document.querySelector('input[name="team1"]').value;
+    var team2 = document.querySelector('input[name="team2"]').value;
+    socket.emit('team:majTeam',{"equipe1": team1, "equipe2": team2});
+};
+//Envoyer un commentaire
+var formTeam = document.getElementById("teamForm");
+formTeam.addEventListener("submit", function(e){
+    e.preventDefault();
+    processFormTeam();
 })
 
 socket.on('equipe:printEquipe', function(equipes){
@@ -95,6 +130,15 @@ socket.on('equipe:printEquipe', function(equipes){
     console.log(equipes);
     equipe1.appendChild(document.createTextNode(equipes.equipe1.nom));
     equipe2.appendChild(document.createTextNode(equipes.equipe2.nom));
+});
+
+socket.on('score:printScore', function(objScore){
+    var scoreEquipe1 = document.getElementById("score1");
+    var scoreEquipe2 = document.getElementById("score2");
+    scoreEquipe1.innerHTML = " ";
+    scoreEquipe2.innerHTML = " ";
+    scoreEquipe1.appendChild(document.createTextNode(objScore.score1));
+    scoreEquipe2.appendChild(document.createTextNode(objScore.score2));
 });
 
 socket.on('comments:printComments', function(comments){
@@ -112,5 +156,5 @@ socket.on('comments:printComment', function(comment){
     var li = document.createElement("li");
     var textComment = document.createTextNode(comment.minute + ":" + comment.equipe + ':' + comment.text);
     li.appendChild(textComment);
-    listComments.appendChild(li);
+    listComments.insertBefore(li, listComments.firstChild);
 });

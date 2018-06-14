@@ -1,6 +1,15 @@
 extends layout
 
 block content
-    form(action="/cdm" method="POST")
-        input(type="text" name="pseudo" placeholder="Entrez votre pseudo")
-        input(type="submit" value="commencer")
+    div.site-wrapper
+        div.site-wrapper-inner
+            div.container
+                div.masthead.clearfix
+                    div.container.inner
+                        h3.masthead-brand CDM
+                div.inner.cover
+                    h1.cover-heading Coupe du Monde 2018
+                    p.lead Choisi un pseudo et participe au chat de la coupe du monde et au live commenté 
+                    form(action="/cdm" method="POST")
+                        input(type="text" name="pseudo" placeholder="Entrez votre pseudo")
+                        input(type="submit" value="commencer")

@@ -34,6 +34,7 @@ router.post("/login", function (req, res) {
                         throw err;
                     if(isMatch){
                         req.session.admin = adminData.username;
+                        req.session.user = adminData.username;
                         res.redirect('/admin');
                     }else{
                         res.redirect('/login');
@@ -47,63 +48,47 @@ router.post("/login", function (req, res) {
 
 router.get('/', function(req,res){
     //Ajouter un article dans la base
-    if(typeof req.session.admin != "undefined" || typeof req.session.client != "undefined"){
+    if(typeof req.session.admin != "undefined" || typeof req.session.user != "undefined"){
         res.redirect('/cdm');
     }else{
         res.setHeader('Content-Type','text/html');
         res.render('pseudo');
     }
-    // let article = new Article();
-    // article.title = "article two";
-    // article.yolo = req.body.field;
-    // article.author = "arnaud";
-    // article.body ="erfj";
-    // article.save(function(err){
-    //   if(err){
-    //     console.log(err);
-    //     return;
-    //   }else{
-    //     console.log("OK");
-    //   }
-
-    //Récupérer tous les articles de la base
-    // Article.find({}, function(err, articles){
-    //   if(err) {
-    //     console.log(err);
-    //   } else {
-    //     res.render('index', {
-    //       title : "yolo",
-    //       articles : articles,
-    //     });
-    //   }
-    // });
-
-    //Ferme la co à la BD
-    //mongoose.connection.close(); 
 });
 
+let User = require('../models/user.js');
 router.post('/cdm', function(req,res){
     pseudo = req.body.pseudo;
     //Intérroger la base de données pour savoir si le pseudo existe déjà
-    var uni = true;
-    let User = require('../models/user.js');
     User.findOne({username : pseudo}, function(err, user){
-        if(user === null){
+        if(user !== null){
             //Si oui rediriger vers / et afficher les erreurs à l'utilisateur, également lorsque pas rentré de pseudo
-            //res.render('pseudo')
-            uni = false;
+            res.redirect('/')
         }else{
-            uni = true
             //Si non enregistrer l'utilisateur dans la base
-            // Enregistrer l'utilisateur en session
+            let user = new User();
+            user.username = pseudo;
+            user.save(function(err){
+                if(err){
+                    console.log(err);
+                    return;
+                }else{
+                    console.log("OK");
+                }
+            });
             // Afficher la page CDM
-            res.render('cdm');
+            req.session.user = pseudo;
+            res.render('cdm', {username : pseudo});
         }
     });
-    console.log(uni)
-    // console.log(unique);
-})
+});
 
-
+router.get('/cdm',function(req,res){
+    if(typeof req.session.user != "undefined"){  
+        res.render('cdm');
+    }else{
+        res.redirect('/')
+    }
+});
 
 module.exports = router;
