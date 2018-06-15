@@ -66,9 +66,6 @@ let Comment = require('./models/comment.js');
 let Equipe = require('./models/equipe.js');
 
 var messages = [];
-
-// var equipes = {equipe1 :{nom : "test", couleur : "blue"}, equipe2 : {nom : "test", couleur : "rouge"}}
-// var tobj = {text : "ndnfinezafif", equipe : "equipe1", type : "info", minute : "32:00" }
 //SOCKET.IO
 server.listen(app.get('port'), function(){
     console.log("Listening on port 8080...");
@@ -107,7 +104,7 @@ io.on('connection', function (socket) {
 
     socket.on('message:newMessage', function (msg){
         messages.push(pseudo + ":" + msg);
-        io.emit("message:printMessage", ent.encode(msg), pseudo);
+        io.emit("message:printMessage", msg, pseudo);
     });
 
     socket.on('disconnect', function(){
@@ -169,9 +166,6 @@ io.on('connection', function (socket) {
     });
 
     socket.on("team:majTeam",function(objEquipe){
-      // equipes.equipe1.nom = objEquipe.equipe1;
-      // equipes.equipe2.nom = objEquipe.equipe2;
-
       //Enregistrer les équipes database
       Equipe.findOne({}, function(err, equipe) {
             var equipeSave = {};
@@ -201,7 +195,6 @@ io.on('connection', function (socket) {
             }
             io.emit("equipe:printEquipe", [equipeSave]);
       });
-      //Enregistrer team dans la database
     });
 
 });
