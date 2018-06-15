@@ -52,7 +52,7 @@ socket.on("connexion:getUsers", function(users){
     var listPseudo = document.getElementById("listUsers");
     users.forEach(function(pseudo){
         var para = document.createElement("li");
-        var pseudo = document.createTextNode(pseudo);
+        var pseudo = document.createTextNode(pseudo.username);
         para.appendChild(pseudo);
         para.className = pseudo.textContent;
         para.style.fontStyle = "italic";

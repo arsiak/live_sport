@@ -46,6 +46,7 @@ var admin = require('./routes/admin');
 var main = require('./routes/main');
 app.set('views', path.join(__dirname,'views'));
 app.set('view engine', 'pug');
+app.set('port', (process.env.PORT || 8080));
 
 // if (app.get('env') === 'production') {
 //   app.set('trust proxy', 1) // trust first proxy
@@ -58,24 +59,33 @@ app.use(bodyParser.json());
 app.use('/admin', requireLogin, admin);
 app.use('/', main);
 
-var users = [];
+let User = require('./models/user.js');
+
 var messages = [];
+var users = [];
 var score = {score1 : 0, score2 : 0};
 var equipes = {equipe1 :{nom : "test", couleur : "blue"}, equipe2 : {nom : "test", couleur : "rouge"}}
 var comments = [];
 // var tobj = {text : "ndnfinezafif", equipe : "equipe1", type : "info", minute : "32:00" }
 //SOCKET.IO
-server.listen(8080, function(){
+server.listen(app.get('port'), function(){
     console.log("Listening on port 8080...");
 });
 io.use(sharedsession(session));
 // Quand un client se connecte, on le note dans la console
 io.on('connection', function (socket) {
     var pseudo = socket.handshake.session.user;
+    if(typeof socket.handshake.session.admin != "undefined"){
+      pseudo = socket.handshake.session.admin;
+    }
+    console.log(pseudo);
     socket.handshake.session.destroy();
-    users.push(pseudo);
+
     socket.broadcast.emit("connexion:notif", pseudo);
-    io.emit("connexion:getUsers", users);
+    User.find({}).then(function(users){
+      io.emit("connexion:getUsers", users);
+    });
+
     socket.emit("connexion:getMessages", messages);
 
     //récupérer les commentaires
@@ -91,6 +101,11 @@ io.on('connection', function (socket) {
     socket.on('disconnect', function(){
       io.emit("connexion:disconnect", pseudo);
       var index = users.indexOf(pseudo);
+      User.findOneAndRemove({username: pseudo}, function(err){
+        if(err){
+          throw err;
+        }
+      });
       users.splice(index,1);
       console.log('user disconnected');
     });
