@@ -132,9 +132,10 @@ socket.on('equipe:printEquipe', function(equipes){
     var equipe2 = document.getElementById("equipe2");
     equipe1.innerHTML = " ";
     equipe2.innerHTML = " ";
-    console.log(equipes);
-    equipe1.appendChild(document.createTextNode(equipes.equipe1.nom));
-    equipe2.appendChild(document.createTextNode(equipes.equipe2.nom));
+     equipes.forEach(function(equipe){
+        equipe1.appendChild(document.createTextNode(equipe.equipe1.nom.toUpperCase()));
+        equipe2.appendChild(document.createTextNode(equipe.equipe2.nom.toUpperCase()));
+    });
 });
 
 socket.on('score:printScore', function(objScore){

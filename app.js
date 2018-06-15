@@ -63,10 +63,11 @@ let User = require('./models/user.js');
 let Message = require('./models/message.js');
 let Score = require('./models/score.js');
 let Comment = require('./models/comment.js');
+let Equipe = require('./models/equipe.js');
 
 var messages = [];
-// var score = {score1 : 0, score2 : 0};
-var equipes = {equipe1 :{nom : "test", couleur : "blue"}, equipe2 : {nom : "test", couleur : "rouge"}}
+
+// var equipes = {equipe1 :{nom : "test", couleur : "blue"}, equipe2 : {nom : "test", couleur : "rouge"}}
 // var tobj = {text : "ndnfinezafif", equipe : "equipe1", type : "info", minute : "32:00" }
 //SOCKET.IO
 server.listen(app.get('port'), function(){
@@ -94,7 +95,10 @@ io.on('connection', function (socket) {
       socket.emit("comments:printComments", comments);
     })
 
-    socket.emit("equipe:printEquipe", equipes);
+    //Récupère les équpes
+    Equipe.find({}).then(function(equipes){
+      socket.emit("equipe:printEquipe", equipes);
+    });
 
     //Récupérer le score
     Score.find({}).then(function(scores){
@@ -165,10 +169,39 @@ io.on('connection', function (socket) {
     });
 
     socket.on("team:majTeam",function(objEquipe){
-      equipes.equipe1.nom = objEquipe.equipe1;
-      equipes.equipe2.nom = objEquipe.equipe2;
+      // equipes.equipe1.nom = objEquipe.equipe1;
+      // equipes.equipe2.nom = objEquipe.equipe2;
+
+      //Enregistrer les équipes database
+      Equipe.findOne({}, function(err, equipe) {
+            var equipeSave = {};
+            if(err)
+                throw err;
+            if(equipe){
+               //update
+              equipeSave=equipe;
+              Equipe.update({}, {equipe1: {nom : objEquipe.equipe1}, equipe2: {nom : objEquipe.equipe2}}, function(err,doc){
+                if (err) {
+                  console.log(err);
+                }else{
+                  console.log("Equipe modifié");
+                }
+              });
+            }else{
+              //ajouter
+              console.log("ajout équipe")
+              let equipe = new Equipe();
+              equipe.equipe1.nom = objEquipe.equipe1;
+              equipe.equipe2.nom = objEquipe.equipe2;
+              equipeSave = equipe
+              equipe.save(function(err){
+                if (err)
+                  console.log(err);
+              });
+            }
+            io.emit("equipe:printEquipe", [equipeSave]);
+      });
       //Enregistrer team dans la database
-      io.emit("equipe:printEquipe", equipes);
     });
 
 });
