@@ -60,9 +60,11 @@ app.use('/admin', requireLogin, admin);
 app.use('/', main);
 
 let User = require('./models/user.js');
+let Message = require('./models/message.js');
+let Score = require('./models/score.js');
+let Comment = require('./models/comment.js');
 
 var messages = [];
-var users = [];
 var score = {score1 : 0, score2 : 0};
 var equipes = {equipe1 :{nom : "test", couleur : "blue"}, equipe2 : {nom : "test", couleur : "rouge"}}
 var comments = [];
@@ -89,7 +91,10 @@ io.on('connection', function (socket) {
     socket.emit("connexion:getMessages", messages);
 
     //récupérer les commentaires
-    socket.emit("comments:printComments", comments);
+    Comment.find({}).sort({"_id":-1}).then(function(comments){
+      socket.emit("comments:printComments", comments);
+    })
+
     socket.emit("equipe:printEquipe", equipes);
     socket.emit("score:printScore", score);
 
@@ -100,13 +105,11 @@ io.on('connection', function (socket) {
 
     socket.on('disconnect', function(){
       io.emit("connexion:disconnect", pseudo);
-      var index = users.indexOf(pseudo);
       User.findOneAndRemove({username: pseudo}, function(err){
         if(err){
           throw err;
         }
       });
-      users.splice(index,1);
       console.log('user disconnected');
     });
 
@@ -118,8 +121,20 @@ io.on('connection', function (socket) {
     });
 
     socket.on("comment:newComment",function(comment){
-      comments.unshift({text:comment.text, equipe:comment.equipe, type:comment.type, minute: comment.minute});
-      console.log(comments);
+      // comments.unshift({text:comment.text, equipe:comment.equipe, type:comment.type, minute: comment.minute});
+      let commentSave = new Comment();
+      commentSave.text = comment.text;
+      commentSave.equipe = comment.equipe;
+      commentSave.type = comment.type;
+      commentSave.minute = comment.minute;
+      commentSave.save(function(err){
+          if(err){
+              console.log(err);
+              return;
+          }else{
+              console.log("OK");
+          }
+      });
       //Enregistrer commentaire database
       io.emit("comments:printComment", comment);
     });
