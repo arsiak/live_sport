@@ -65,9 +65,8 @@ let Score = require('./models/score.js');
 let Comment = require('./models/comment.js');
 
 var messages = [];
-var score = {score1 : 0, score2 : 0};
+// var score = {score1 : 0, score2 : 0};
 var equipes = {equipe1 :{nom : "test", couleur : "blue"}, equipe2 : {nom : "test", couleur : "rouge"}}
-var comments = [];
 // var tobj = {text : "ndnfinezafif", equipe : "equipe1", type : "info", minute : "32:00" }
 //SOCKET.IO
 server.listen(app.get('port'), function(){
@@ -96,7 +95,11 @@ io.on('connection', function (socket) {
     })
 
     socket.emit("equipe:printEquipe", equipes);
-    socket.emit("score:printScore", score);
+
+    //Récupérer le score
+    Score.find({}).then(function(scores){
+      socket.emit("score:printScore", scores);
+    })
 
     socket.on('message:newMessage', function (msg){
         messages.push(pseudo + ":" + msg);
@@ -115,9 +118,31 @@ io.on('connection', function (socket) {
 
     socket.on("score:majScore",function(objScore){
       //Enregistrer score database
-      score.score1 = objScore.score1;
-      score.score2 = objScore.score2;
-      io.emit("score:printScore", objScore);
+      Score.findOne({}, function(err, score) {
+            if(err)
+                throw err;
+            if(score){
+               //update
+              Score.update({}, {score1: objScore.score1, score2: objScore.score2}, function(err,doc){
+                if (err) {
+                  console.log(err);
+                }else{
+                  console.log("score modifié");
+                }
+              });
+            }else{
+              //ajouter
+              console.log("ajouter")
+              let score = new Score();
+              score.score1 = objScore.score1;
+              score.score2 = objScore.score2;
+              score.save(function(err){
+                if (err)
+                  console.log(err);
+              });
+            }
+      });
+      io.emit("score:printScore", [objScore]);
     });
 
     socket.on("comment:newComment",function(comment){

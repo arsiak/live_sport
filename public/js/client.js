@@ -88,8 +88,10 @@ socket.on('score:printScore', function(objScore){
     var scoreEquipe2 = document.getElementById("score2");
     scoreEquipe1.innerHTML = " ";
     scoreEquipe2.innerHTML = " ";
-    scoreEquipe1.appendChild(document.createTextNode(objScore.score1));
-    scoreEquipe2.appendChild(document.createTextNode(objScore.score2));
+    objScore.forEach(function(score){
+        scoreEquipe1.appendChild(document.createTextNode(score.score1));
+        scoreEquipe2.appendChild(document.createTextNode(score.score2));
+    });
 })
 
 socket.on('equipe:printEquipe', function(equipes){
