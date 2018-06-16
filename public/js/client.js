@@ -113,7 +113,7 @@ socket.on('comments:printComments', function(comments){
         var eMinute = document.createElement("span");
         eMinute.classList.add("badge", "badge-primary", "badge-pill", "pull-left");
         eMinute.appendChild(document.createTextNode(comment.minute));
-        var textComment = document.createTextNode(comment.equipe + ':' + comment.text);
+        var textComment = document.createTextNode(comment.text);
         li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
         li.appendChild(eMinute);
         li.appendChild(textComment);
@@ -127,7 +127,7 @@ socket.on('comments:printComment', function(comment){
     var eMinute = document.createElement("span");
     eMinute.classList.add("badge", "badge-primary", "badge-pill", "pull-left");
     eMinute.appendChild(document.createTextNode(comment.minute));
-    var textComment = document.createTextNode(comment.equipe + ':' + comment.text);
+    var textComment = document.createTextNode(comment.text);
     li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
     li.appendChild(eMinute);
     li.appendChild(textComment);
