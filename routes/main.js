@@ -50,7 +50,6 @@ router.post("/login", function (req, res) {
 
 
 router.get('/', function(req,res){
-    //Ajouter un article dans la base
     if(typeof req.session.admin != "undefined" || typeof req.session.user != "undefined"){
         res.redirect('/cdm');
     }else{
@@ -62,28 +61,29 @@ router.get('/', function(req,res){
 let User = require('../models/user.js');
 router.post('/cdm', function(req,res){
     pseudo = ent.encode(req.body.pseudo);
-    //Intérroger la base de données pour savoir si le pseudo existe déjà
-    User.findOne({username : pseudo}, function(err, user){
-        if(user !== null){
-            //Si oui rediriger vers / et afficher les erreurs à l'utilisateur, également lorsque pas rentré de pseudo
-            res.redirect('/')
-        }else{
-            //Si non enregistrer l'utilisateur dans la base
-            let user = new User();
-            user.username = pseudo;
-            user.save(function(err){
-                if(err){
-                    console.log(err);
-                    return;
-                }else{
-                    console.log("OK");
-                }
-            });
-            // Afficher la page CDM
-            req.session.user = pseudo;
-            res.render('cdm', {username : pseudo});
-        }
-    });
+    if( pseudo.trim() === ""){
+        res.render('pseudo', {error : "Le pseudo ne peut pas être vide"});
+    }else{
+        //Intérroger la base de données pour savoir si le pseudo existe déjà
+        User.findOne({username : pseudo}, function(err, user){
+            if(user !== null){
+                res.render('pseudo', {error : "Désolé ce pseudo est connecté, veuillez choisir un autre pseudo"});
+            }else{
+                //Si non enregistrer l'utilisateur dans la base
+                let user = new User();
+                user.username = pseudo;
+                user.save(function(err){
+                    if(err){
+                        console.log(err);
+                        return;
+                    }
+                });
+                // Afficher la page CDM
+                req.session.user = pseudo;
+                res.render('cdm', {username : pseudo});
+            }
+        });
+    }
 });
 
 router.get('/cdm',function(req,res){

@@ -12,3 +12,5 @@ block content
                         i(class="fas fa-futbol")
                     input(type="text" name="pseudo" class="form-control" placeholder="Entrez votre pseudo") 
                 input(type="submit" value="Entrer" class="btn btn-primary")
+                if error
+                    p(class="col-md-12 col-xs-12")= error
