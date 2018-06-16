@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8080');
+var socket = io.connect();
 
 // while (pseudo == null){
 //     var pseudo = prompt('Quel est votre pseudo ?');

@@ -67,8 +67,8 @@ let Equipe = require('./models/equipe.js');
 
 var messages = [];
 //SOCKET.IO
-server.listen(app.get('port'), function(){
-    console.log("Listening on port 8080...");
+server.listen(4000, 'localhost', function(){
+    console.log("Listening on port 4000...");
 });
 io.use(sharedsession(session));
 // Quand un client se connecte, on le note dans la console
