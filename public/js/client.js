@@ -133,3 +133,8 @@ socket.on('comments:printComment', function(comment){
     li.appendChild(textComment);
     listComments.insertBefore(li, listComments.firstChild);
 });
+
+socket.on('comments:printEmptyComments', function(){
+    var listComments = document.getElementById("listComments");
+    listComments.innerHTML = "";
+});

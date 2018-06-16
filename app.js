@@ -165,6 +165,15 @@ io.on('connection', function (socket) {
       io.emit("comments:printComment", comment);
     });
 
+    socket.on("comments:deleteAll", function(){
+      Comment.remove({}, function(err){
+        if(err){
+          console.log(err);
+        }
+      });
+      io.emit("comments:printEmptyComments");
+    });
+
     socket.on("team:majTeam",function(objEquipe){
       //Enregistrer les équipes database
       Equipe.findOne({}, function(err, equipe) {
